@@ -1,0 +1,794 @@
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["The Fibonacci Chain", \
+"Title",ExpressionUUID->"e5cc1603-b6cd-4c18-89c8-78dfd57bcded"],
+
+Cell["\<\
+First load the TriCats package and load the standard library to access \
+oft-used diagrams:\
+\>", "Text",ExpressionUUID->"241c2fbb-5929-4894-90cc-fe3cfba046a9"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"SetDirectory", "[", 
+   RowBox[{"NotebookDirectory", "[", "]"}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"If", "[", 
+     RowBox[{
+      RowBox[{"FileExistsQ", "@", "#"}], ",", 
+      RowBox[{"SetDirectory", "[", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"Get", "@", "#"}], ")"}], "@", "$UserName"}], "]"}]}], "]"}],
+     "&"}], "@", "\"\<packagelocation\>\""}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"<<", "TriCats`"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"LoadLibrary", "[", "\"\<stdlib\>\"", "]"}], 
+  ";"}]}], "Input",ExpressionUUID->"1320014b-0277-4258-9b6a-75fcfcc59fd1"],
+
+Cell[TextData[{
+ "Load diagrams:\n- C4Atoms denotes the list of zero- and one-faced diagrams \
+in ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["C", "4"], TraditionalForm]],ExpressionUUID->
+  "cc8ac95a-748c-4862-b8b8-d18580e3c0f9"],
+ ";\n- cap and cup denote the obvious diagrams;\n- line denotes a straight \
+line diagram;\n- trivalentb (short for \[OpenCurlyDoubleQuote]trivalent \
+branch\[CloseCurlyDoubleQuote]) denotes the trivalent vertex with one ingoing \
+and two outgoing legs."
+}], "Text",ExpressionUUID->"6a1e706e-f56b-4630-a82d-17f84941ca9b"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"Move2Down", "=", 
+   RowBox[{
+    RowBox[{"DiagramMoveDown", "[", 
+     RowBox[{"#", ",", "2"}], "]"}], "&"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"C4Atoms", "=", 
+   RowBox[{"Move2Down", "/@", 
+    RowBox[{"Retrieve", "[", "\"\<stdlib:C4Atoms\>\"", "]"}]}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"cap", "=", 
+   RowBox[{"Retrieve", "[", "\"\<stdlib:Cap\>\"", "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"cup", "=", 
+   RowBox[{"Retrieve", "[", "\"\<stdlib:Cup\>\"", "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"line", "=", 
+   RowBox[{"Retrieve", "[", "\"\<stdlib:Line\>\"", "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"trivalentb", "=", 
+   RowBox[{"Retrieve", "[", "\"\<stdlib:TrivalentBranch\>\"", "]"}]}], 
+  ";"}]}], "Input",ExpressionUUID->"abe36beb-7139-4aab-bfe1-eb8af771d574"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"so3qbasisrule", "=", 
+   RowBox[{
+    RowBox[{"x_Diagram", "/;", 
+     RowBox[{"IsomorphicDiagramQ", "[", 
+      RowBox[{"x", ",", 
+       RowBox[{
+       "C4Atoms", "\[LeftDoubleBracket]", "4", "\[RightDoubleBracket]"}]}], 
+      "]"}]}], "\[Rule]", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"-", 
+        FractionBox["1", 
+         RowBox[{"d", "-", "1"}]]}], ",", 
+       FractionBox["1", 
+        RowBox[{"d", "-", "1"}]], ",", "1"}], "}"}], ".", 
+     RowBox[{"C4Atoms", "\[LeftDoubleBracket]", 
+      RowBox[{"1", ";;", "3"}], "\[RightDoubleBracket]"}]}]}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"fibdt", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"d", "\[Rule]", 
+      RowBox[{
+       FractionBox["1", "2"], 
+       RowBox[{"(", 
+        RowBox[{"1", "+", 
+         SqrtBox["5"]}], ")"}]}]}], ",", 
+     RowBox[{"t", "\[Rule]", 
+      RowBox[{
+       FractionBox["1", "2"], " ", 
+       RowBox[{"(", 
+        RowBox[{"1", "-", 
+         SqrtBox["5"]}], ")"}]}]}], ",", 
+     RowBox[{"b", "\[Rule]", "1"}]}], "}"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"fibbasisrule", "=", 
+   RowBox[{
+    RowBox[{"x_Diagram", "/;", 
+     RowBox[{"IsomorphicDiagramQ", "[", 
+      RowBox[{"x", ",", 
+       RowBox[{
+       "C4Atoms", "\[LeftDoubleBracket]", "3", "\[RightDoubleBracket]"}]}], 
+      "]"}]}], "\[Rule]", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"1", ",", 
+       RowBox[{"-", 
+        FractionBox["1", "d"]}]}], "}"}], ".", 
+     RowBox[{"C4Atoms", "\[LeftDoubleBracket]", 
+      RowBox[{"1", ";;", "2"}], "\[RightDoubleBracket]"}]}]}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"fibbeta", "=", 
+   RowBox[{"FullSimplify", "[", 
+    RowBox[{
+     RowBox[{"Exp", "[", 
+      RowBox[{"\[ImaginaryI]", 
+       FractionBox[
+        RowBox[{"n", "-", "1"}], "n"], "\[Pi]"}], "]"}], "/.", 
+     RowBox[{"n", "\[Rule]", "5"}]}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"fibbraiding", "=", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"1", ",", "fibbeta"}], "}"}], ".", 
+    RowBox[{"C4Atoms", "\[LeftDoubleBracket]", 
+     RowBox[{"1", ";;", "2"}], "\[RightDoubleBracket]"}]}]}], 
+  ";"}]}], "Input",ExpressionUUID->"139e4cf6-e3f7-4f39-ad52-1936a1731a7a"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"YangBaxter", "[", 
+   RowBox[{"braiding_", ",", "line_"}], "]"}], ":=", 
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{"DiagramCompose", "[", 
+     RowBox[{
+      RowBox[{"DiagramTensor", "[", 
+       RowBox[{"braiding", ",", "line"}], "]"}], ",", 
+      RowBox[{"DiagramTensor", "[", 
+       RowBox[{"line", ",", "braiding"}], "]"}], ",", 
+      RowBox[{"DiagramTensor", "[", 
+       RowBox[{"braiding", ",", "line"}], "]"}]}], "]"}], ",", 
+    RowBox[{"DiagramCompose", "[", 
+     RowBox[{
+      RowBox[{"DiagramTensor", "[", 
+       RowBox[{"line", ",", "braiding"}], "]"}], ",", 
+      RowBox[{"DiagramTensor", "[", 
+       RowBox[{"braiding", ",", "line"}], "]"}], ",", 
+      RowBox[{"DiagramTensor", "[", 
+       RowBox[{"line", ",", "braiding"}], "]"}]}], "]"}]}], 
+   "}"}]}]], "Input",ExpressionUUID->"f52cf8f1-1a15-4527-982c-e2f49bb5734d"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"VTensor", "[", 
+    RowBox[{
+    "braiding_", ",", "trivalentb_", ",", "line_", ",", "cup_", ",", "cap_"}],
+     "]"}], ":=", 
+   RowBox[{"DiagramCompose", "[", 
+    RowBox[{
+     RowBox[{"DiagramTensor", "[", 
+      RowBox[{"line", ",", "trivalentb", ",", "cup"}], "]"}], ",", 
+     RowBox[{"DiagramTensor", "[", 
+      RowBox[{"braiding", ",", 
+       RowBox[{"DiagramConjugate", "[", "braiding", "]"}], ",", "line"}], 
+      "]"}], ",", 
+     RowBox[{"DiagramTensor", "[", 
+      RowBox[{
+      "line", ",", "trivalentb", ",", "line", ",", "line", ",", "line"}], 
+      "]"}], ",", 
+     RowBox[{"DiagramTensor", "[", 
+      RowBox[{"line", ",", "line", ",", "cap", ",", "line", ",", "line"}], 
+      "]"}]}], "]"}]}], 
+  ";"}]], "Input",ExpressionUUID->"4d779b74-05a2-418f-beb4-df31f93da156"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"AscendingOp", "[", 
+    RowBox[{"v_", ",", "line_"}], "]"}], ":=", 
+   RowBox[{"Function", "[", 
+    RowBox[{"x", ",", 
+     RowBox[{"DiagramCompose", "[", 
+      RowBox[{"v", ",", 
+       RowBox[{"DiagramTensor", "[", 
+        RowBox[{"x", ",", "line", ",", "line"}], "]"}], ",", 
+       RowBox[{"DiagramConjugate", "[", "v", "]"}]}], "]"}]}], "]"}]}], 
+  ";"}]], "Input",ExpressionUUID->"916ae03c-e414-4425-89b0-99c9a4fa4c17"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"FusionOp", "[", 
+   RowBox[{"v_", ",", "line_"}], "]"}], ":=", 
+  RowBox[{"Function", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"x", ",", "y"}], "}"}], ",", 
+    RowBox[{"DiagramCompose", "[", 
+     RowBox[{"v", ",", 
+      RowBox[{"DiagramTensor", "[", 
+       RowBox[{"x", ",", "y"}], "]"}], ",", 
+      RowBox[{"DiagramConjugate", "[", "v", "]"}]}], "]"}]}], 
+   "]"}]}]], "Input",ExpressionUUID->"f1575586-f398-421c-9319-6921be18789d"],
+
+Cell[CellGroupData[{
+
+Cell["Braiding test", \
+"Section",ExpressionUUID->"3d552db0-d4c6-4aa4-a1cd-68238a795751"],
+
+Cell["\<\
+First we check that fibbraiding is indeed a braiding.
+Biunitarity:\
+\>", "Text",ExpressionUUID->"9c538e9f-88cd-4864-aa02-300caac95aae"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"FullSimplify", "[", 
+   RowBox[{
+    RowBox[{"ReduceDiagram", "[", 
+     RowBox[{
+      RowBox[{"DiagramCompose", "[", 
+       RowBox[{
+        RowBox[{"DiagramConjugate", "[", "fibbraiding", "]"}], ",", 
+        "fibbraiding"}], "]"}], ",", 
+      RowBox[{"dimC4", "\[Rule]", "2"}]}], "]"}], "/.", "fibdt"}], "]"}], "//",
+   "EnsureGraph"}]], \
+"Input",ExpressionUUID->"1b4b8de4-f218-4ce7-8efd-eda5bcad1cec"],
+
+Cell[BoxData[
+ RowBox[{"Diagram", "[", 
+  RowBox[{
+   GraphicsBox[
+    NamespaceBox["NetworkGraphics",
+     DynamicModuleBox[{Typeset`graph = HoldComplete[
+       Graph[{1, 2, 3, 4}, {Null, 
+         SparseArray[
+         Automatic, {4, 4}, 0, {
+          1, {{0, 1, 2, 3, 4}, {{3}, {4}, {1}, {2}}}, Pattern}]}, {
+        VertexShapeFunction -> {"Name"}}]]}, 
+      TagBox[
+       GraphicsGroupBox[
+        GraphicsComplexBox[{{1.12501, -0.12501}, {
+         1.12501, -0.37503000000000003`}, {0.12501000000000007`, -0.12501}, {
+         0.12501000000000007`, -0.37503000000000003`}}, {
+          {Hue[0.6, 0.7, 0.5], Opacity[0.7], 
+           {Arrowheads[0.], ArrowBox[{1, 3}, 0.02546]}, 
+           {Arrowheads[0.], ArrowBox[{2, 4}, 0.02546]}}, 
+          {Hue[0.6, 0.2, 0.8], EdgeForm[{GrayLevel[0], Opacity[0.7]}], 
+           InsetBox[
+            PaneBox["1",
+             Alignment->Center,
+             ImageMargins->2], 1,
+            BaseStyle->"Graphics"], InsetBox[
+            PaneBox["2",
+             Alignment->Center,
+             ImageMargins->2], 2,
+            BaseStyle->"Graphics"], InsetBox[
+            PaneBox["3",
+             Alignment->Center,
+             ImageMargins->2], 3,
+            BaseStyle->"Graphics"], InsetBox[
+            PaneBox["4",
+             Alignment->Center,
+             ImageMargins->2], 4,
+            BaseStyle->"Graphics"]}}]],
+       MouseAppearanceTag["NetworkGraphics"]],
+      AllowKernelInitialization->False]],
+    DefaultBaseStyle->{
+     "NetworkGraphics", FrontEnd`GraphicsHighlightColor -> Hue[0.8, 1., 0.6]},
+    
+    FormatType->TraditionalForm,
+    FrameTicks->None], ",", 
+   RowBox[{"{", 
+    RowBox[{"1", ",", "2"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"3", ",", "4"}], "}"}]}], 
+  "]"}]], "Output",ExpressionUUID->"ab2db11d-935e-4982-bb8e-6841d11a29cf"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"FullSimplify", "[", 
+   RowBox[{
+    RowBox[{"ReduceDiagram", "[", 
+     RowBox[{
+      RowBox[{"DiagramCompose", "[", 
+       RowBox[{
+        RowBox[{"DiagramTensor", "[", 
+         RowBox[{"line", ",", "cup", ",", "line"}], "]"}], ",", 
+        RowBox[{"DiagramTensor", "[", 
+         RowBox[{
+          RowBox[{"DiagramConjugate", "[", "fibbraiding", "]"}], ",", 
+          "fibbraiding"}], "]"}], ",", 
+        RowBox[{"DiagramTensor", "[", 
+         RowBox[{"line", ",", "cap", ",", "line"}], "]"}]}], "]"}], ",", 
+      RowBox[{"dimC4", "\[Rule]", "2"}]}], "]"}], "/.", "fibdt"}], "]"}], "//",
+   "EnsureGraph"}]], \
+"Input",ExpressionUUID->"42b6b734-3faa-496e-a5ac-7f35b25053bc"],
+
+Cell[BoxData[
+ RowBox[{"Diagram", "[", 
+  RowBox[{
+   GraphicsBox[
+    NamespaceBox["NetworkGraphics",
+     DynamicModuleBox[{Typeset`graph = HoldComplete[
+       Graph[{1, 2, 3, 4}, {Null, 
+         SparseArray[
+         Automatic, {4, 4}, 0, {
+          1, {{0, 1, 2, 3, 4}, {{2}, {1}, {4}, {3}}}, Pattern}]}, {
+        VertexShapeFunction -> {"Name"}}]]}, 
+      TagBox[
+       GraphicsGroupBox[
+        GraphicsComplexBox[{{1.12501, -0.12501}, {
+         0.12501000000000007`, -0.12501}, {1.12501, -0.37503000000000003`}, {
+         0.12501000000000007`, -0.37503000000000003`}}, {
+          {Hue[0.6, 0.7, 0.5], Opacity[0.7], 
+           {Arrowheads[0.], ArrowBox[{1, 2}, 0.02546]}, 
+           {Arrowheads[0.], ArrowBox[{3, 4}, 0.02546]}}, 
+          {Hue[0.6, 0.2, 0.8], EdgeForm[{GrayLevel[0], Opacity[0.7]}], 
+           InsetBox[
+            PaneBox["1",
+             Alignment->Center,
+             ImageMargins->2], 1,
+            BaseStyle->"Graphics"], InsetBox[
+            PaneBox["2",
+             Alignment->Center,
+             ImageMargins->2], 2,
+            BaseStyle->"Graphics"], InsetBox[
+            PaneBox["3",
+             Alignment->Center,
+             ImageMargins->2], 3,
+            BaseStyle->"Graphics"], InsetBox[
+            PaneBox["4",
+             Alignment->Center,
+             ImageMargins->2], 4,
+            BaseStyle->"Graphics"]}}]],
+       MouseAppearanceTag["NetworkGraphics"]],
+      AllowKernelInitialization->False]],
+    DefaultBaseStyle->{
+     "NetworkGraphics", FrontEnd`GraphicsHighlightColor -> Hue[0.8, 1., 0.6]},
+    
+    FormatType->TraditionalForm,
+    FrameTicks->None], ",", 
+   RowBox[{"{", 
+    RowBox[{"1", ",", "2"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"3", ",", "4"}], "}"}]}], 
+  "]"}]], "Output",ExpressionUUID->"91bb31d2-5175-4d1d-9305-f651af544c64"]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"fibcheckYB", "=", 
+   RowBox[{"ReduceDiagram", "[", 
+    RowBox[{
+     RowBox[{"Subtract", "@@", 
+      RowBox[{"YangBaxter", "[", 
+       RowBox[{"fibbraiding", ",", "line"}], "]"}]}], ",", 
+     RowBox[{"dimC4", "\[Rule]", "2"}]}], "]"}]}], 
+  ";"}]], "Input",ExpressionUUID->"f7b2038f-e9db-4e77-b027-0234c6fd9753"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"FullSimplify", "[", 
+  RowBox[{
+   RowBox[{"Components", "[", 
+    RowBox[{"fibcheckYB", ",", 
+     RowBox[{"DistinctDiagrams", "[", "fibcheckYB", "]"}]}], "]"}], "/.", 
+   "fibdt"}], 
+  "]"}]], "Input",ExpressionUUID->"4a14a9f8-19a2-4be4-929e-5be927d2ebd1"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"0", ",", "0", ",", "0", ",", "0", ",", "0"}], 
+  "}"}]], "Output",ExpressionUUID->"56f5a066-021c-4773-8bc3-5ee736060531"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["The chain example", \
+"Section",ExpressionUUID->"34bbba26-28e9-4ecc-b59c-54c4a57d01df"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"fibv", "=", 
+   RowBox[{"ReduceDiagram", "[", 
+    RowBox[{
+     RowBox[{"VTensor", "[", 
+      RowBox[{
+      "fibbraiding", ",", "trivalentb", ",", "line", ",", "cup", ",", "cap"}],
+       "]"}], ",", 
+     RowBox[{"dimC4", "\[Rule]", "2"}]}], "]"}]}], 
+  ";"}]], "Input",ExpressionUUID->"f26a0d13-0dc4-4501-90db-473ca732240c"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"fibascending", "=", 
+   RowBox[{"AscendingOp", "[", 
+    RowBox[{"fibv", ",", "line"}], "]"}]}], 
+  ";"}]], "Input",ExpressionUUID->"b7f716ab-a1b4-43ab-b7b9-336e335c5037"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"fibvmatrix", "=", 
+  RowBox[{"RootReduce", "@", 
+   RowBox[{"Transpose", "[", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"FullSimplify", "[", "\[IndentingNewLine]", 
+       RowBox[{"Components", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{
+           RowBox[{"ReduceDiagram", "[", 
+            RowBox[{
+             RowBox[{"fibascending", "[", "#", "]"}], ",", 
+             RowBox[{"b", "\[Rule]", "1"}], ",", 
+             RowBox[{"dimC4", "\[Rule]", "2"}]}], "]"}], "//.", 
+           RowBox[{"{", 
+            RowBox[{"so3qbasisrule", ",", "fibbasisrule"}], "}"}]}], "//.", 
+          "fibdt"}], ",", 
+         RowBox[{"C4Atoms", "\[LeftDoubleBracket]", 
+          RowBox[{"1", ";;", "2"}], "\[RightDoubleBracket]"}]}], "]"}], 
+       "\[IndentingNewLine]", "]"}], "&"}], "/@", 
+     RowBox[{"C4Atoms", "\[LeftDoubleBracket]", 
+      RowBox[{"1", ";;", "2"}], "\[RightDoubleBracket]"}]}], 
+    "\[IndentingNewLine]", 
+    "]"}]}]}]], \
+"Input",ExpressionUUID->"0262a5e3-9a7e-400b-9402-2fa3f5ca5336"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"1", ",", 
+     RowBox[{
+      FractionBox["1", "2"], " ", 
+      RowBox[{"(", 
+       RowBox[{"3", "-", 
+        SqrtBox["5"]}], ")"}]}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"0", ",", 
+     RowBox[{
+      FractionBox["1", "2"], " ", 
+      RowBox[{"(", 
+       RowBox[{"3", "-", 
+        SqrtBox["5"]}], ")"}]}]}], "}"}]}], 
+  "}"}]], "Output",ExpressionUUID->"a8f74a9c-b492-4d98-ab4c-63b5cd39a6be"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"{", 
+   RowBox[{"fibveigenvalues", ",", "fibveigenvectors"}], "}"}], "=", 
+  RowBox[{
+   RowBox[{"Eigensystem", "[", "fibvmatrix", "]"}], "//", 
+   "RootReduce"}]}]], \
+"Input",ExpressionUUID->"47160fba-9177-431d-906c-17f2aed85821"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"1", ",", 
+     RowBox[{
+      FractionBox["1", "2"], " ", 
+      RowBox[{"(", 
+       RowBox[{"3", "-", 
+        SqrtBox["5"]}], ")"}]}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"1", ",", "0"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{
+        FractionBox["1", "2"], " ", 
+        RowBox[{"(", 
+         RowBox[{"1", "-", 
+          SqrtBox["5"]}], ")"}]}], ",", "1"}], "}"}]}], "}"}]}], 
+  "}"}]], "Output",ExpressionUUID->"259e175c-378b-419b-b238-40cd838ac772"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"-", 
+     RowBox[{"Log2", "[", "#", "]"}]}], "&"}], "/@", "fibveigenvalues"}], "//",
+   "N"}]], "Input",ExpressionUUID->"9fa536c3-3c24-408c-b632-3348d1b16f0e"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"0.`", ",", "1.3884838272612348`"}], 
+  "}"}]], "Output",ExpressionUUID->"3f76724d-afa1-4760-8aeb-0a08343f56c2"]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"fibfusion", "=", 
+   RowBox[{"FusionOp", "[", 
+    RowBox[{"fibv", ",", "line"}], "]"}]}], 
+  ";"}]], "Input",ExpressionUUID->"7ef478ea-6179-4861-b01d-a364faa13171"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"fibfusionmatrix", "=", 
+  RowBox[{"FullSimplify", "[", "\[IndentingNewLine]", 
+   RowBox[{"Table", "[", 
+    RowBox[{
+     RowBox[{"Components", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{
+         RowBox[{"ReduceDiagram", "[", 
+          RowBox[{
+           RowBox[{"fibfusion", "[", 
+            RowBox[{
+             RowBox[{
+              RowBox[{
+              "fibveigenvectors", "\[LeftDoubleBracket]", "i", 
+               "\[RightDoubleBracket]"}], ".", 
+              RowBox[{"C4Atoms", "\[LeftDoubleBracket]", 
+               RowBox[{"1", ";;", "2"}], "\[RightDoubleBracket]"}]}], ",", 
+             RowBox[{
+              RowBox[{
+              "fibveigenvectors", "\[LeftDoubleBracket]", "j", 
+               "\[RightDoubleBracket]"}], ".", 
+              RowBox[{"C4Atoms", "\[LeftDoubleBracket]", 
+               RowBox[{"1", ";;", "2"}], "\[RightDoubleBracket]"}]}]}], "]"}],
+            ",", 
+           RowBox[{"b", "\[Rule]", "1"}], ",", 
+           RowBox[{"dimC4", "\[Rule]", "3"}]}], "]"}], "//.", 
+         RowBox[{"{", 
+          RowBox[{"so3qbasisrule", ",", "fibbasisrule"}], "}"}]}], "//.", 
+        "fibdt"}], ",", 
+       RowBox[{"C4Atoms", "\[LeftDoubleBracket]", 
+        RowBox[{"1", ";;", "2"}], "\[RightDoubleBracket]"}]}], "]"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{"i", ",", "1", ",", "2"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"j", ",", "1", ",", "2"}], "}"}]}], "]"}], 
+   "]"}]}]], "Input",ExpressionUUID->"bda6e46d-fa56-4ccc-8ed8-f0e61858cc03"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"1", ",", "0"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"2", "-", 
+        SqrtBox["5"]}], ",", 
+       RowBox[{
+        FractionBox["1", "2"], " ", 
+        RowBox[{"(", 
+         RowBox[{"3", "-", 
+          SqrtBox["5"]}], ")"}]}]}], "}"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"2", "-", 
+        SqrtBox["5"]}], ",", 
+       RowBox[{
+        FractionBox["1", "2"], " ", 
+        RowBox[{"(", 
+         RowBox[{"3", "-", 
+          SqrtBox["5"]}], ")"}]}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{
+        FractionBox["1", "2"], " ", 
+        RowBox[{"(", 
+         RowBox[{"11", "-", 
+          RowBox[{"5", " ", 
+           SqrtBox["5"]}]}], ")"}]}], ",", 
+       RowBox[{"5", "-", 
+        RowBox[{"2", " ", 
+         SqrtBox["5"]}]}]}], "}"}]}], "}"}]}], 
+  "}"}]], "Output",ExpressionUUID->"28bc3f55-653e-442b-8c40-eeb37b19e451"]
+}, Open  ]],
+
+Cell[TextData[{
+ "The fusion coefficients ",
+ Cell[BoxData[
+  FormBox[
+   SubsuperscriptBox["f", "\[Gamma]", "\[Alpha]\[Beta]"], TraditionalForm]],
+  FormatType->"TraditionalForm",ExpressionUUID->
+  "56a6a2a9-b035-4182-adb2-5a11b69816d9"],
+ ":"
+}], "Text",ExpressionUUID->"b8207e3f-c639-4b56-af6b-14b4e69b44eb"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"fibfusioncoefficients", "=", 
+  RowBox[{"Table", "[", 
+   RowBox[{
+    RowBox[{"FullSimplify", "[", 
+     RowBox[{"LinearSolve", "[", 
+      RowBox[{
+       RowBox[{"Transpose", "@", "fibveigenvectors"}], ",", 
+       RowBox[{"fibfusionmatrix", "\[LeftDoubleBracket]", 
+        RowBox[{"i", ",", "j"}], "\[RightDoubleBracket]"}]}], "]"}], "]"}], 
+    ",", 
+    RowBox[{"{", 
+     RowBox[{"i", ",", "1", ",", "2"}], "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{"j", ",", "1", ",", "2"}], "}"}]}], 
+   "]"}]}]], "Input",ExpressionUUID->"5a05700e-d8d2-41c1-8c79-1d648c1eb749"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"1", ",", "0"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"0", ",", 
+       RowBox[{
+        FractionBox["1", "2"], " ", 
+        RowBox[{"(", 
+         RowBox[{"3", "-", 
+          SqrtBox["5"]}], ")"}]}]}], "}"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"0", ",", 
+       RowBox[{
+        FractionBox["1", "2"], " ", 
+        RowBox[{"(", 
+         RowBox[{"3", "-", 
+          SqrtBox["5"]}], ")"}]}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"-", "2"}], "+", 
+        SqrtBox["5"]}], ",", 
+       RowBox[{"5", "-", 
+        RowBox[{"2", " ", 
+         SqrtBox["5"]}]}]}], "}"}]}], "}"}]}], 
+  "}"}]], "Output",ExpressionUUID->"0a3e6d17-66da-41ff-9376-de0697a32511"]
+}, Open  ]],
+
+Cell[TextData[{
+ "The fusion matrix ",
+ Cell[BoxData[
+  FormBox[
+   SubsuperscriptBox["N", "\[Gamma]", "\[Alpha]\[Beta]"], TraditionalForm]],
+  ExpressionUUID->"5b2d8c6f-11b6-4ef7-bbc7-0191047a3f6f"],
+ ":"
+}], "Text",ExpressionUUID->"7b5942f6-782d-46e1-a231-fd91be153ffd"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"fibN", "=", 
+  RowBox[{"Map", "[", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"Boole", "@", 
+      RowBox[{"FullSimplify", "[", 
+       RowBox[{"#", "\[NotEqual]", "0"}], "]"}]}], "&"}], ",", 
+    "fibfusioncoefficients", ",", 
+    RowBox[{"{", "3", "}"}]}], 
+   "]"}]}]], "Input",ExpressionUUID->"9ec1ee2a-35c1-4cad-8d51-0f2e9b2b981f"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"1", ",", "0"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"0", ",", "1"}], "}"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"0", ",", "1"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"1", ",", "1"}], "}"}]}], "}"}]}], 
+  "}"}]], "Output",ExpressionUUID->"d96ac1b3-5b7b-4634-8a1c-8416768a213c"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"fibN", "\[LeftDoubleBracket]", 
+   RowBox[{"1", ",", ";;"}], "\[RightDoubleBracket]"}], "//", 
+  "MatrixForm"}]], \
+"Input",ExpressionUUID->"5cbcf06a-dd2e-46c9-a6c6-caddd341cd98"],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"1", "0"},
+     {"0", "1"}
+    },
+    GridBoxAlignment->{
+     "Columns" -> {{Center}}, "ColumnsIndexed" -> {}, "Rows" -> {{Baseline}}, 
+      "RowsIndexed" -> {}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}, "RowsIndexed" -> {}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[
+   BoxForm`e$]]]], \
+"Output",ExpressionUUID->"44c0bd7e-e6df-42aa-ac41-82d55cd6defc"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"fibN", "\[LeftDoubleBracket]", 
+   RowBox[{"2", ",", ";;"}], "\[RightDoubleBracket]"}], "//", 
+  "MatrixForm"}]], \
+"Input",ExpressionUUID->"711df2d9-9414-419b-a806-c336e8e998a8"],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"0", "1"},
+     {"1", "1"}
+    },
+    GridBoxAlignment->{
+     "Columns" -> {{Center}}, "ColumnsIndexed" -> {}, "Rows" -> {{Baseline}}, 
+      "RowsIndexed" -> {}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}, "RowsIndexed" -> {}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[
+   BoxForm`e$]]]], \
+"Output",ExpressionUUID->"bb2b203b-355f-4fc6-88d7-ff45f31d4d68"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{808, 911},
+WindowMargins->{{872, Automatic}, {Automatic, 150}},
+PrivateNotebookOptions->{"FileOutlineCache"->False},
+TrackCellChangeTimes->False,
+FrontEndVersion->"11.2 for Mac OS X x86 (32-bit, 64-bit Kernel) (September \
+10, 2017)",
+StyleDefinitions->"Default.nb"
+]
